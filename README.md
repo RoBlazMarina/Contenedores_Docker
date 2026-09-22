@@ -1,27 +1,36 @@
-Contenedores_Docker
-Descripción del proyecto
+# Contenedores_Docker
 
-Contenedores_Docker es una aplicación sencilla basada en contenedores que demuestra la integración de tres servicios mediante Docker Compose:
+## Descripción del proyecto
 
--Nginx como servidor web.
--PHP-FPM 8.3 para ejecutar código PHP.
--MySQL 8.0 como sistema gestor de bases de datos.
+**Contenedores_Docker** es una aplicación sencilla basada en contenedores que demuestra la integración de tres servicios mediante Docker Compose:
+
+- Nginx como servidor web.
+- PHP-FPM 8.3 para ejecutar código PHP.
+- MySQL 8.0 como sistema gestor de bases de datos.
 
 El objetivo principal del proyecto es comprobar la comunicación entre los tres contenedores y verificar que la aplicación PHP puede conectarse correctamente a la base de datos MySQL a través de la red interna de Docker.
 
-Cuando la conexión se establece correctamente, la aplicación muestra el mensaje:
+Cuando la conexión se establece correctamente, la aplicación muestra el siguiente mensaje:
 
-¡Los 3 contenedores están conectados correctamente!
+> ¡Los 3 contenedores están conectados correctamente!
 
-Tecnologías utilizadas
--Docker
--Docker Compose
--Nginx
--PHP 8.3 FPM
--MySQL 8.0
--PDO para la conexión a bases de datos
+---
 
-Estructura del proyecto
+## Tecnologías utilizadas
+
+- Docker
+- Docker Compose
+- Nginx
+- PHP 8.3 FPM
+- MySQL 8.0
+- PDO
+- PHP
+
+---
+
+## Estructura del proyecto
+
+```text
 Contenedores_Docker/
 │
 ├── docker-compose.yml
@@ -34,63 +43,98 @@ Contenedores_Docker/
 │
 └── src/
     └── index.php
+```
 
-Descripción de cada componente
-docker-compose.yml
+### Descripción de los archivos
 
-Define los tres servicios que forman la aplicación:
+#### docker-compose.yml
 
--web: contenedor Nginx.
--php: contenedor PHP-FPM construido a partir del Dockerfile.
--db: contenedor MySQL.
+Este archivo define los tres servicios que forman la aplicación:
 
-Además:
+- **web**: servidor Nginx.
+- **php**: intérprete PHP-FPM.
+- **db**: servidor MySQL.
 
--Configura la red compartida app-network.
--Define el volumen persistente db_data.
--Establece las dependencias entre servicios.
+También configura:
 
-src/index.php
+- Un volumen persistente para la base de datos.
+- Una red compartida entre los contenedores.
+- Las dependencias de arranque entre servicios.
 
-Aplicación PHP encargada de:
+#### src/index.php
 
-1. Conectarse a la base de datos MySQL mediante PDO.
-2. Mostrar un mensaje de éxito si la conexión se realiza correctamente.
-3. Mostrar un mensaje de error en caso contrario.
+Archivo PHP encargado de comprobar la conexión con MySQL mediante PDO.
 
-Código principal:
-$pdo = new PDO(
-    "mysql:host=db;dbname=mi_base_datos",
-    "mi_usuario",
-    "mi_password"
-);
-El parámetro db coincide con el nombre del servicio definido en Docker Compose, por lo que Docker resuelve automáticamente el nombre del host.
+```php
+<?php
+try {
+    $pdo = new PDO(
+        "mysql:host=db;dbname=mi_base_datos",
+        "mi_usuario",
+        "mi_password"
+    );
 
-php/Dockerfile
+    echo "<h1>¡Los 3 contenedores están conectados correctamente!</h1>";
+} catch (PDOException $e) {
+    echo "Error de conexión con la base de datos: " . $e->getMessage();
+}
+?>
+```
+
+Utiliza como host `db`, que corresponde al nombre del servicio definido en Docker Compose.
+
+#### php/Dockerfile
 
 Construye la imagen personalizada de PHP.
+
+```dockerfile
 FROM php:8.3-fpm
 
 RUN docker-php-ext-install pdo pdo_mysql
+```
 
 Funciones:
 
--Utiliza PHP 8.3 FPM como imagen base.
--Instala las extensiones necesarias para trabajar con MySQL mediante PDO.
+- Utiliza la imagen oficial PHP 8.3 FPM.
+- Instala las extensiones PDO y PDO_MySQL necesarias para conectarse a MySQL.
 
-nginx/default.conf
+#### nginx/default.conf
 
-Configura Nginx para:
+Configura Nginx para servir la aplicación PHP.
 
--Escuchar en el puerto 80.
--Servir los archivos de la carpeta /var/www/html.
--Redirigir las peticiones PHP al contenedor PHP-FPM.
+```nginx
+server {
+    listen 80;
+    server_name localhost;
+    root /var/www/html;
+    index index.php index.html;
 
-La comunicación entre Nginx y PHP se realiza mediante:
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+}
+```
+
+La línea:
+
+```nginx
 fastcgi_pass php:9000;
-Donde php es el nombre del servicio definido en Docker Compose.
+```
 
-Funcionamiento de la arquitectura
+permite que Nginx envíe las peticiones PHP al contenedor PHP-FPM.
+
+---
+
+## Arquitectura de la aplicación
+
+```text
 Usuario
    │
    ▼
@@ -101,132 +145,100 @@ PHP-FPM (php)
    │
    ▼
 MySQL (db)
+```
 
-1. El usuario accede al navegador.
+### Flujo de funcionamiento
+
+1. El usuario accede desde el navegador.
 2. Nginx recibe la petición.
-3. Nginx envía los archivos PHP al contenedor PHP.
+3. Nginx envía los archivos PHP al servicio PHP-FPM.
 4. PHP ejecuta el código.
-5. PHP se conecta a MySQL.
-6. El resultado se devuelve al navegador.
+5. PHP intenta conectarse a MySQL.
+6. Se devuelve el resultado al navegador.
 
-Configuración de red
+---
 
-Los tres contenedores comparten la red:
+## Red Docker
+
+Todos los servicios están conectados mediante la red:
+
+```yaml
 networks:
   app-network:
     driver: bridge
-Gracias a ello:
-- web puede comunicarse con php.
-- php puede comunicarse con db.
-- Los servicios pueden localizarse mediante sus nombres.
+```
 
-- Persistencia de datos
+Gracias a esta configuración:
 
-La base de datos utiliza un volumen Docker:
+- El contenedor `web` puede comunicarse con `php`.
+- El contenedor `php` puede comunicarse con `db`.
+- Docker resuelve automáticamente los nombres internos de los servicios.
 
+---
+
+## Persistencia de datos
+
+MySQL utiliza un volumen persistente:
+
+```yaml
 volumes:
-- db_data:/var/lib/mysql
+  - db_data:/var/lib/mysql
+```
 
-Esto permite conservar los datos aunque el contenedor MySQL sea eliminado y vuelto a crear.
+Esto permite conservar la información almacenada en la base de datos aunque el contenedor sea eliminado y recreado.
 
-Posibles problemas o mejoras detectadas
-1. Dependencia de MySQL
+---
 
-Aunque el servicio PHP depende de MySQL:
+## Posibles errores y mejoras
 
+### 1. Arranque de MySQL
+
+Aunque el servicio PHP depende de MySQL mediante:
+
+```yaml
 depends_on:
-- db
+  - db
+```
 
-esto solo garantiza que el contenedor se inicie, no que la base de datos esté completamente preparada para aceptar conexiones.
+esto únicamente garantiza que el contenedor se inicie, pero no que MySQL esté preparado para aceptar conexiones.
 
-En proyectos reales suele añadirse:
+Como mejora, podrían utilizarse:
 
--Un script de espera (wait-for-it.sh).
--Healthchecks en Docker Compose.
+- Health Checks.
+- Scripts de espera como `wait-for-it`.
 
-2. Credenciales expuestas
+### 2. Credenciales visibles
 
-Actualmente las credenciales están escritas directamente en el archivo:
+Las credenciales se encuentran directamente en el archivo `docker-compose.yml`:
+
+```yaml
 MYSQL_USER: mi_usuario
 MYSQL_PASSWORD: mi_password
 MYSQL_ROOT_PASSWORD: root_password
+```
 
+En proyectos reales se recomienda utilizar:
 
-En entornos de producción se recomienda utilizar:
--Variables de entorno.
--Archivos .env.
--Docker Secrets.
+- Variables de entorno.
+- Archivos `.env`.
+- Docker Secrets.
 
-3. Gestión de errores
+### 3. Exposición de errores
 
-En index.php se muestra el error completo:
+Actualmente el sistema muestra directamente el mensaje de error devuelto por PDO:
 
-PHP
+```php
 echo $e->getMessage();
+```
 
-Esto resulta útil durante el desarrollo, pero en producción puede revelar información sensible sobre la infraestructura.
+Esto resulta útil para el desarrollo, pero en producción podría revelar información sensible sobre la infraestructura.
 
-4. Versión de Docker Compose
+### 4. Seguridad
 
-La línea:
-version: "3.8"
+La base de datos expone el puerto:
 
-sigue siendo válida, aunque las versiones más recientes de Docker Compose suelen omitir este campo.
+```yaml
+3306:3306
+```
 
-Cómo ejecutar el proyecto
-1. Clonar el repositorio
-
-git clone <URL_DEL_REPOSITORIO>
-cd Contenedores_Docker
-Mostrar más líneas
-2. Construir y levantar los contenedores
-Shell
-docker compose up --build
-
-o:
-
-
-docker-compose up --build
-
-
-
-según la versión instalada.
-
-3. Verificar que los contenedores están activos
-
-docker ps
-
-
-
-Deberían aparecer:
-
--web
--php
--db
-
-4. Acceder a la aplicación
-
-Abrir en el navegador:
-
-http://localhost:8080
-
-
-Si todo funciona correctamente se mostrará el mensaje:
-
-
-¡Los 3 contenedores están conectados correctamente!
-
-
-5. Detener los contenedores
-
-docker compose down
-
-
-Si además se desea eliminar los volúmenes:
-
-docker compose down -v
-
-
-Conclusión
-
-Este proyecto constituye un ejemplo básico de arquitectura multicontenedor utilizando Docker Compose. Permite comprender cómo configurar y conectar un servidor web Nginx, un intérprete PHP-FPM y una base de datos MySQL dentro de una misma red Docker, facilitando el despliegue y la administración de aplicaciones web modernas mediante contenedores.
+Si no es necesario acceder a 
