@@ -241,4 +241,77 @@ La base de datos expone el puerto:
 3306:3306
 ```
 
-Si no es necesario acceder a 
+Si no es necesario acceder a MySQL desde el sistema anfitrión, este puerto podría eliminarse para aumentar la seguridad.
+ 
+---
+ 
+## Ejecución del proyecto
+ 
+### 1. Clonar el repositorio
+ 
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd Contenedores_Docker
+```
+ 
+### 2. Construir y arrancar los contenedores
+ 
+```bash
+docker compose up --build
+```
+ 
+O, en versiones anteriores:
+ 
+```bash
+docker-compose up --build
+```
+ 
+### 3. Verificar los contenedores
+ 
+```bash
+docker ps
+```
+ 
+Deberían aparecer los siguientes contenedores:
+ 
+```text
+web
+php
+db
+```
+ 
+### 4. Acceder a la aplicación
+ 
+Abrir el navegador y acceder a:
+ 
+```text
+http://localhost:8080
+```
+ 
+Si todo funciona correctamente aparecerá el mensaje:
+ 
+```text
+¡Los 3 contenedores están conectados correctamente!
+```
+ 
+---
+ 
+## Detener la aplicación
+ 
+Detener los contenedores:
+ 
+```bash
+docker compose down
+```
+ 
+Detener los contenedores y eliminar los volúmenes:
+ 
+```bash
+docker compose down -v
+```
+ 
+---
+ 
+## Conclusión
+ 
+Este proyecto demuestra cómo desplegar una arquitectura web básica utilizando Docker Compose mediante tres contenedores independientes: Nginx, PHP-FPM y MySQL. Además, permite comprender conceptos fundamentales como redes Docker, persistencia mediante volúmenes y comunicación entre servicios dentro de un mismo entorno de contenedores.
