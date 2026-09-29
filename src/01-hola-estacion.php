@@ -26,7 +26,7 @@
 
 // Una variable en PHP empieza SIEMPRE por $. No se declara el tipo
 // (en Java sería: String nombreEstacion = "ARES-7";).
-$nombreEstacion = 'ARES-7';
+$nombreEstacion = 'ORBIT-OS';
 
 // date() es una función de PHP que devuelve la fecha/hora del SERVIDOR
 // con el formato indicado (H = hora 00-23, i = minutos, s = segundos).
