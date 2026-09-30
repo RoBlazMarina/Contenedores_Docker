@@ -2,13 +2,14 @@
 
 ## Descripción del proyecto
 
-**Contenedores_Docker** es una aplicación sencilla basada en contenedores que demuestra la integración de tres servicios mediante Docker Compose:
+**Contenedores_Docker** es una aplicación sencilla basada en contenedores que demuestra la integración de cuatro servicios mediante Docker Compose:
 
 - Nginx como servidor web.
 - PHP-FPM 8.3 para ejecutar código PHP.
 - MySQL 8.0 como sistema gestor de bases de datos.
+- phpMyAdmin como interfaz gráfica para la administración de MySQL.
 
-El objetivo principal del proyecto es comprobar la comunicación entre los tres contenedores y verificar que la aplicación PHP puede conectarse correctamente a la base de datos MySQL a través de la red interna de Docker.
+El objetivo principal del proyecto es comprobar la comunicación entre los contenedores y verificar que la aplicación PHP puede conectarse correctamente a la base de datos MySQL a través de la red interna de Docker. Además, phpMyAdmin permite gestionar visualmente la base de datos desde el navegador.
 
 Cuando la conexión se establece correctamente, la aplicación muestra el siguiente mensaje:
 
@@ -23,6 +24,7 @@ Cuando la conexión se establece correctamente, la aplicación muestra el siguie
 - Nginx
 - PHP 8.3 FPM
 - MySQL 8.0
+- phpMyAdmin
 - PDO
 - PHP
 
@@ -49,11 +51,17 @@ Contenedores_Docker/
 
 #### docker-compose.yml
 
-Este archivo define los tres servicios que forman la aplicación:
+Este archivo define los cuatro servicios que forman la aplicación:
 
 - **web**: servidor Nginx.
 - **php**: intérprete PHP-FPM.
 - **db**: servidor MySQL.
+- **phpmyadmin**: interfaz web para la administración de MySQL.
+
+phpMyAdmin está configurado para conectarse automáticamente al servicio `db` mediante la variable:
+ 
+```yaml
+PMA_HOST: db
 
 También configura:
 
@@ -135,27 +143,30 @@ permite que Nginx envíe las peticiones PHP al contenedor PHP-FPM.
 ## Arquitectura de la aplicación
 
 ```text
-Usuario
-   │
-   ▼
-Nginx (web)
-   │
-   ▼
-PHP-FPM (php)
-   │
-   ▼
-MySQL (db)
+                    ┌───────────┐
+                    │ phpMyAdmin│
+                    └───┬────── ┘
+                        │ 
+                        ▼ 
+Usuario ──► Nginx ──► PHP-FPM ──► MySQL
 ```
 
 ### Flujo de funcionamiento
+
+### Aplicación web
 
 1. El usuario accede desde el navegador.
 2. Nginx recibe la petición.
 3. Nginx envía los archivos PHP al servicio PHP-FPM.
 4. PHP ejecuta el código.
-5. PHP intenta conectarse a MySQL.
+5. PHP se conecta a MySQL.
 6. Se devuelve el resultado al navegador.
 
+### Administración de la base de datos
+
+1. El usuario accede a phpMyAdmin.
+2. phpMyAdmin se conecta al contenedor MySQL mediante la red Docker.
+3. El usuario puede consultar, modificar y administrar las bases de datos desde el navegador.
 ---
 
 ## Red Docker
@@ -173,6 +184,7 @@ Gracias a esta configuración:
 - El contenedor `web` puede comunicarse con `php`.
 - El contenedor `php` puede comunicarse con `db`.
 - Docker resuelve automáticamente los nombres internos de los servicios.
+- El contenedor `phpmyadmin` puede comunicarse con `db`.
 
 ---
 
@@ -278,20 +290,34 @@ Deberían aparecer los siguientes contenedores:
 web
 php
 db
+phpmyadmin
 ```
  
 ### 4. Acceder a la aplicación
- 
-Abrir el navegador y acceder a:
- 
+
+Aplicación PHP:
+
 ```text
 http://localhost:8080
 ```
- 
+
 Si todo funciona correctamente aparecerá el mensaje:
- 
+
 ```text
 ¡Los 3 contenedores están conectados correctamente!
+```
+
+phpMyAdmin:
+
+```text
+http://localhost:8000
+```
+
+Accede utilizando las credenciales configuradas en el servicio MySQL:
+
+```text
+Usuario: mi_usuario
+Contraseña: mi_password
 ```
  
 ---
@@ -314,4 +340,4 @@ docker compose down -v
  
 ## Conclusión
  
-Este proyecto demuestra cómo desplegar una arquitectura web básica utilizando Docker Compose mediante tres contenedores independientes: Nginx, PHP-FPM y MySQL. Además, permite comprender conceptos fundamentales como redes Docker, persistencia mediante volúmenes y comunicación entre servicios dentro de un mismo entorno de contenedores.
+Este proyecto demuestra cómo desplegar una arquitectura web basada en contenedores utilizando Docker Compose. La solución integra Nginx, PHP-FPM, MySQL y phpMyAdmin, permitiendo comprender conceptos fundamentales como redes Docker, persistencia mediante volúmenes, comunicación entre servicios y administración gráfica de bases de datos dentro de un entorno de contenedores.
