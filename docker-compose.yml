@@ -6,7 +6,7 @@ services:
         ports:
             - "8080:80"
         volumes:
-            - ./src:/var/www/html
+            - ./www:/var/www/html
             - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
             - php
@@ -18,7 +18,8 @@ services:
             dockerfile: Dockerfile
         container_name: php
         volumes:
-                - ./src:/var/www/html
+            - ./www:/var/www/html
+            - ./www/forja-heroes/php/forja.ini:/usr/local/etc/php/conf.d/zz-forja.ini:ro
         depends_on:
             - db
         networks:
