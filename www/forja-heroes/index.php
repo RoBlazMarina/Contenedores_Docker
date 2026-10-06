@@ -25,14 +25,52 @@ require_once __DIR__ . '/inc/heroe.php';
 // TODO 3. CÁLCULOS (sigue el orden del enunciado: R1 a R8)
 // ---------------------------------------------------------------------
 // R1 · Conversión de tipos
-        
+        $fuerzaTxt= (int) $fuerzaTxt;
+        $destrezaTxt= (int) $destrezaTxt;
+        $inteligenciaTxt= (int) $inteligenciaTxt;
+        $constitucionTxt= (int) $constitucionTxt;
+        $experienciaTxt= (int) $experienciaTxt;
+        $vidaActualTxt= (int) $vidaActualTxt;
+        $oroTxt=(float) $oroTxt;
 
 // R2 · Progresión (nivel, xpEnNivel, xpParaSubir, pctNivel)
 
+    $nivel= intdiv ($experienciaTxt, XP_POR_NIVEL) +1;
+    $xpEnNivel= $experienciaTxt % XP_POR_NIVEL;
+    $xpParaSubir=XP_POR_NIVEL- $xpEnNivel;
+    $pcNivel= ($xpEnNivel*100)/XP_POR_NIVEL;
+
+
+
 
 // R3 · Vida (vidaMax, pctVida)
+    $vidaMax = VIDA_BASE + (( $constitucionTxt * $nivel ) * MULT_VIDA);
+    $pctVida = ($vidaActualTxt / $vidaMax) * 100;
+
 // R4 · Combate (daño, estadística especial, poder, comparación con el rival)
+    $danio = (($inteligenciaTxt)*3) + (($nivel**2)/4);
+    $mana= ($inteligenciaTxt * 10) + ($experienciaTxt % 100);
+    $poder = (int) round($danio * $nivel);
+    
+    //Aquí iniciamos el operador terciario
+    $comparacion = $poder <=> PODER_RIVAL;
+
+    $veredicto = ($comparacion === 1)
+        ? "Ventaja: ¡a la carga!"
+        : (($comparacion === 0) //Si la primera condición no se cumple, se pasa a la segunda, que puede o no cumplirse.
+            ? "Empate: combate igualado"
+            : "Desventaja: mejor retirarse");
+
 // R5 · Estado y decisiones
+
+    $comparaciónvida = $pctVida <=> 0;
+    $estado = ($comparaciónvida > 0)
+        ? (($comparaciónvida > 35)
+            ? "En pie"
+            : "En peligro")
+        : "K.O.";
+
+
 // R6 · Barras de progreso
 // R7 · Textos (htmlspecialchars, ?? , ?: , number_format, .= , heredoc)
 
@@ -64,7 +102,7 @@ require_once __DIR__ . '/inc/heroe.php';
     </div>
     <table>
         <tr><th>Fuerza</th><th>Destreza</th><th>Inteligencia</th><th>Constitución</th></tr>
-        <tr><td>TODO</td><td>TODO</td><td>TODO</td><td>TODO</td></tr>
+        <tr><td><?=$fuerzaTxt?></td><td><?=$destrezaTxt?></td><td><?=$inteligenciaTxt?></td><td><?=$constitucionTxt?></td></tr>
     </table>
 
     <h2>Progreso</h2>
@@ -73,10 +111,10 @@ require_once __DIR__ . '/inc/heroe.php';
 
     <h2>Estado y decisiones</h2>
     <table>
-        <tr><td>Estado</td><td>TODO</td></tr>
+        <tr><td>Estado</td><td><?= $estado ?></td></tr>
         <tr><td>¿Puede ascender de rango? (nivel ≥ 5 y vida ≥ 50 %)</td><td>TODO Sí/No</td></tr>
         <tr><td>¿Necesita poción? (vida &lt; 40 % o no veterano)</td><td>TODO Sí/No</td></tr>
-        <tr><td>Rival: TODO nombre (poder TODO)</td><td>TODO resultado de la nave espacial → veredicto</td></tr>
+        <tr><td>Rival: <?=NOMBRE_RIVAL?> (<?=PODER_RIVAL?>)</td><td>TODO resultado de la nave espacial → veredicto</td></tr>
     </table>
 
     <h2>Crónica</h2>

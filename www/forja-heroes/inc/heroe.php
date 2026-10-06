@@ -37,8 +37,8 @@ define ("PODER_RIVAL", 650);
 //         $experienciaTxt, $vidaActualTxt, $oroTxt, $esVeterano (bool).
 
 $nombreHeroe= 'Aldric, el Arcano';
-$apodo= (null);
-$lemaç= ("");
+$apodo= null;
+$lema= null;
 $fuerzaTxt= 8;
 $destrezaTxt= 11;
 $inteligenciaTxt= 19;
