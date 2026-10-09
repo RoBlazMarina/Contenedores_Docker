@@ -27,6 +27,7 @@ const MULT_VIDA=1;
 const BLOQUES_BARRA=20;
 const NOMBRE_RIVAL='Dragón de Obsidiana';
 define ("PODER_RIVAL", 650);
+const ESTADISTICA_ESPECIAL = 'Maná';
 
 
 
@@ -38,19 +39,14 @@ define ("PODER_RIVAL", 650);
 
 $nombreHeroe= 'Aldric, el Arcano';
 $apodo= null;
-$lema= null;
-$fuerzaTxt= 8;
-$destrezaTxt= 11;
-$inteligenciaTxt= 19;
-$constitucionTxt= 10;
-$experienciaTxt= 3120;
-$vidaActualTxt= 41;
-$oroTxt=987.4;
+$lema= '';
+$fuerzaTxt= '8';
+$destrezaTxt= '11';
+$inteligenciaTxt= '19';
+$constitucionTxt= '10';
+$experienciaTxt= '3120';
+$vidaActualTxt= '41';
+$oroTxt='987.4';
 $esVeterano = false;
 
-$nivel= intdiv ($experienciaTxt, XP_POR_NIVEL) +1;
 
-$danio = (($inteligenciaTxt)*3) + (($nivel**2)/4);
-$mana= ($inteligenciaTxt * 10) + ($experienciaTxt % 100);
-
-?>
