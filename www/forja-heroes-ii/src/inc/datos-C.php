@@ -57,6 +57,7 @@ $precios = [
 // tipo: 'vacía' | 'trampa' | 'combate' | 'tesoro' | 'descanso'
 // Solo las salas de tesoro pueden traer la clave 'objeto'.
 $salas = [
+
     ['nombre' => 'Galería de reflejos',      'tipo' => 'trampa',   'valor' => 80],
     ['nombre' => 'Sala de los dobles',       'tipo' => 'combate',  'valor' => 280],
     ['nombre' => 'Pasillo sin salida',       'tipo' => 'vacía',    'valor' => 0],
