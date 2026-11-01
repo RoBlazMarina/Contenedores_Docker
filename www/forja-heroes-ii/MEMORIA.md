@@ -10,14 +10,14 @@ Compara TU página con la tabla de comprobación del enunciado.
 
 | Dato | Valor esperado (enunciado) | Valor de mi página | ¿Coincide? |
 |---|---|---|---|
-| Poder total de la party | | | |
-| Daño por ronda | | | |
-| Líder | | | |
-| Vida al salir de las salas | | | |
-| Resultado frente al jefe (y ronda) | | | |
-| Oro final | | | |
-| Valor del inventario | | | |
-| Salas en el mapa | | | |
+| Poder total de la party | 1414 · 6,5 | 1414 · 6,5 | Sí |
+| Daño por ronda | 138,8 | 138,8 | Sí |
+| Líder | Vex | Vex| Sí |
+| Vida al salir de las salas | 375 | | |
+| Resultado frente al jefe (y ronda) | Victoria en ronda 5 | Victoria en ronda 5 | Sí |
+| Oro final | 2720,60 | 2720,60 | Sí |
+| Valor del inventario | 287 | 287 | Sí |
+| Salas en el mapa | 8 | 8 | Sí |
 
 Si algo no coincide, explica qué estaba mal y cómo lo arreglaste.
 
@@ -26,13 +26,13 @@ Lo principal que me di cuenta es que al hacer el experimento no se actualizaba b
 ## 2. Bucles y documento resultante
 
 - Captura del `foreach` que pinta la tabla de la party en tu editor y del **Ctrl+U** de esa tabla.
-`![Código del Foreach](capturas/ForeachCode.png)`
-`![Control + U del Foreach](capturas/Ctrl+U%20Foreach.png)`
+![Código del Foreach](capturas/ForeachCode.png)
+![Control + U del Foreach](capturas/Ctrl+U%20Foreach.png)
 - En el código hay **una** fila `<tr>`; en el Ctrl+U, ¿cuántas? ¿Por qué?
 En el Ctrl +U hay 4 porque es el buble del código desplegado (con todos los objetos del array en él y no simplificado).
 - ¿Aparece en el Ctrl+U algo de `endforeach` o de `if`? ¿Por qué?
 
-No, no aparece. Supongo que es porque ahí solo aparece cada caso desarrollado, exactamente como se muestra en el navegador, lo cual hace que no contenga la lógica que lo respalda.
+No, no aparece. Supongo que es porque ahí solo aparece cada caso desarrollado, exactamente como se muestra en el navegador, lo cual hace que no contenga la lógica que lo respalda. Por decrilo de otra forma, es lo que el navegador recibe en html/css, pero no se llega a ver el PHP.
 
 ## 3. Experimento: predigo el efecto de un cambio
 
@@ -45,7 +45,7 @@ Añade esta sala **al principio** de `$salas` en tu fichero de datos:
 1. **Predicción** (antes de recargar): ¿cuántas salas se explorarán? ¿Qué resultado tendrá el jefe? ¿Qué dirá el aviso del mapa?
     No explorarían porque la party moriría en esa primera sala. Aunque sobrevivieran, no vencerían al jefe (el resultado inicial es bastante ajustado). El mapa daría error porque no se corresponden las salas con el mapeado planteado.
 2. **Resultado** real (captura).
-    `![Experimento del Derrumbre](capturas/Experimento.png)`
+    ![Experimento del Derrumbre](capturas/Experimento.png)
 3. ¿Qué sentencia ha cortado el recorrido? ¿Qué pasa con la tabla de rondas y por qué?
     Ha terminado el recorrido esa sala al ser combate, pues la vida quedaba en números negativos, de manera que el if hace que termine la expedición.
 4. Deja los datos como estaban.
@@ -54,7 +54,7 @@ Añade esta sala **al principio** de `$salas` en tu fichero de datos:
 
 1. Cambia la clase de un héroe a `'Bardo'` y recarga. Captura del error. ¿Qué tipo de error es y por qué se produce?
     Es un error fatal que ocurre porque en ningún caso, en el match hay coincidencia con el bardo.
-    `![Error de Bardo](capturas/Error%20de%20Bardo.png)`
+    ![Error de Bardo](capturas/Error%20de%20Bardo.png)
 2. ¿Qué posición le asigna el `switch` a ese Bardo? ¿Por qué el `switch` no falla y el `match` sí?
      El switch le asignaría la posición de reserva porque es la posición por defecto cuando no hay correspondencia previa. Se podría decir que el Switch sí tiene un caso aplicado para cuando no hay coincidencias (un estado por defecto) mientras que el match no.
 3. Deja los datos como estaban. ¿Qué comportamiento prefieres en un programa real y por qué?

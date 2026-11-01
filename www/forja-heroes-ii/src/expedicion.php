@@ -130,7 +130,7 @@ if ($vidaActual <= 0){
     $party[$i]['nivel'] = $nivel;
     $party[$i]['vidaMax'] = $vidaMax;
     $party[$i]['pctVida'] = $pctVida;
-    $party[$i]['dano'] = round($dano, 2); //En este caso redondeamos el daño.
+    $party[$i]['dano'] = $dano;
     $party[$i]['estado'] = $estado;
     $party[$i]['poder'] =$poder;
     $party[$i]['posicion'] = $posicion;
@@ -357,6 +357,7 @@ $vidaJefe = $jefe['vida'];
 // TODO 4.5  foreach con clave => valor: $valorInventario (cantidad × precio).
 
 $valorInventario = 0.0;
+$subtotales = [];
 
 foreach ($inventario as $objeto => $cantidad) {
     // Si el objeto estuviera en el inventario pero no en la lista de precios, vale 0.0
@@ -406,12 +407,12 @@ for ($f = 0; $f < $filas; $f++) {
 
 // TODO 6.2  ¿El número de 'S' coincide con count($salas)? → $mapaCoherente
 
-// Comprobación de integridad entre la matriz y el listado de salas
+/* Comprobación de integridad entre la matriz y el listado de salas*/
 $mapaCoherente = (($conteoCeldas['S'] ?? 0) === count($salas));
 
 // TODO 6.3  Barra de vida de la party con for.
 
-// Porcentaje final de la party evitando división por cero
+# Porcentaje final de la party evitando división por cero
 $pctVidaPartyFinal = $vidaMaxParty > 0 ? ($vidaParty / $vidaMaxParty) * 100 : 0.0;
 
 // Bloques proporcionales acotados
@@ -436,8 +437,7 @@ for ($b = 0; $b < BLOQUES_BARRA; $b++) {
 <main>
     <span class="insignia">Variante <?= VARIANTE ?></span>
     <h1><?=$nombreMazmorra?></h1>
-    <p class="subtitulo">Informe de expedición · líder: <?= $lider !== null ? ($lider['nombre']) : 'Ninguno' ?></p>
-
+   <p class="subtitulo">Informe de expedición · líder: <?= $lider !== null ? htmlspecialchars($lider['nombre']) : 'Ninguno' ?></p>
     <h2>La party</h2>
     <table>
         <tr><th>Héroe</th><th>Clase</th><th>Nivel</th><th>Vida</th><th>Daño</th><th>Poder</th><th>Posición</th><th>Estado</th></tr>

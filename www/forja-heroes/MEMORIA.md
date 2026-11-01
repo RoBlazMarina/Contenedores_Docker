@@ -63,7 +63,7 @@ Sí, ya que muchos valores dependen del nivel, de manera que si este se ve trunc
 
 1. Quita el `(int)` del cálculo de los bloques de la barra de vida. Recarga. Captura del error.
 
-`![Captura del error al quitarle el int a la barra de vida](capturas/error_strict_types.png)`
+![Captura del error al quitarle el int a la barra de vida](capturas/error_strict_types.png)
 
 2. Explica qué dice el mensaje (tipo de error, función, argumento, línea).
 - **Tipo de error:** `Fatal error: Uncaught TypeError`.
