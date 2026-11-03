@@ -20,34 +20,45 @@ declare(strict_types=1);
 //- Leer con ini_get las 6 directivas de tu forja.ini y comprobar
 //   error_reporting() con E_ALL
 
-$directivas = [
-    'display_errors',
-    'error_reporting',
-    'date.timezone',
-    'short_open_tag',
-    'expose_php',
-    'memory_limit'
-];
+    /*Inicializamos las directivas*/
+$iniPrincipal = php_ini_loaded_file() ?: 'Ninguno (configuración por defecto)';
+$iniScanned = php_ini_scanned_files();
+$iniAdicionales =($iniScanned !== false && $iniScanned !== '') ? $iniScanned : 'Ninguno';
 
-//- Mostrar qué ficheros .ini adicionales ha cargado PHP
+    //Lecturas de forja.ini
 
-$iniAdicionales = php_ini_scanned_files();
+    $valDisplayErrors  = ini_get('display_errors');
+    $valErrorReporting = ini_get('error_reporting');
+    $valDateTimezone   = ini_get('date.timezone');
+    $valShortOpenTag   = ini_get('short_open_tag');
+    $valExposePhp      = ini_get('expose_php');
+    $valMemoryLimit    = ini_get('memory_limit');
+
+//Comprobamos el error_reporting
+$esEAll = (error_reporting() === E_ALL) ? ' (Coincide con E_ALL)' : ' (No coincide con E_ALL)';
+$txtErrorReporting = $valErrorReporting . $esEAll;
+
+$pqDisplayErrors  = 'En desarrollo se activa (On/1) para ver errores de inmediato en pantalla.';
+$pqErrorReporting = 'E_ALL reporta todos los niveles de fallos, avisos y advertencias.';
+$pqDateTimezone   = 'Sincroniza el huso horario con la hora local de la península (Europe/Madrid).';
+$pqShortOpenTag   = 'Habilita la etiqueta de apertura corta <? en el servidor.';
+$pqExposePhp      = 'En producción se apaga para no exponer la presencia de PHP en cabeceras HTTP.';
+$pqMemoryLimit    = 'Tope de memoria de 256M para evitar que un script sature la RAM.';
 
 //- Cambiar date.timezone con ini_set, mostrar la hora antes y después,
 //    el valor devuelto por ini_set y restaurarla con ini_restore
 
 $horaAntes = date('H:i:s (T)');
-$timezoneAnterior = ini_set('date.timezone', 'America/New_York');
+$retornoTimezone = ini_set('date.timezone', 'America/New_York');
 $horaDespues = date('H:i:s (T)');
 ini_restore('date.timezone');
 $horaRestaurada = date('H:i:s (T)');
 
 // - Intentar cambiar short_open_tag con ini_set y mostrar el resultado
 
-$shortOpenTagAntes = ini_get('short_open_tag');
-$resultadoCambioShort = ini_set('short_open_tag', '0'); // Devuelve false si no puede cambiarse
-$shortOpenTagDespues = ini_get('short_open_tag');
-
+$shortAntes = ini_get('short_open_tag');
+$retornoShort = ini_set('short_open_tag', '0'); // Devuelve false
+$shortDespues = ini_get('short_open_tag');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -59,7 +70,7 @@ $shortOpenTagDespues = ini_get('short_open_tag');
 </head>
 <body>
 <main>
-    <h1>Diagnóstico del servidor</h1>
+   <h1>Diagnóstico del servidor</h1>
     <p class="subtitulo">PHP <?= PHP_VERSION ?> · <?= PHP_OS ?></p>
 
     <h2>Directivas configuradas en php/forja.ini</h2>
@@ -72,13 +83,36 @@ $shortOpenTagDespues = ini_get('short_open_tag');
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($directivasInfo as $directiva => $info): ?>
-                <tr>
-                    <td><code><?= htmlspecialchars($directiva) ?></code></td>
-                    <td><?= htmlspecialchars((string) $info['valor']) ?></td>
-                    <td><?= htmlspecialchars($info['por_que']) ?></td>
-                </tr>
-            <?php endforeach; ?>
+            <tr>
+                <td><code>display_errors</code></td>
+                <td><?= htmlspecialchars($valDisplayErrors) ?></td>
+                <td><?= htmlspecialchars($pqDisplayErrors) ?></td>
+            </tr>
+            <tr>
+                <td><code>error_reporting</code></td>
+                <td><?= htmlspecialchars($txtErrorReporting) ?></td>
+                <td><?= htmlspecialchars($pqErrorReporting) ?></td>
+            </tr>
+            <tr>
+                <td><code>date.timezone</code></td>
+                <td><?= htmlspecialchars($valDateTimezone) ?></td>
+                <td><?= htmlspecialchars($pqDateTimezone) ?></td>
+            </tr>
+            <tr>
+                <td><code>short_open_tag</code></td>
+                <td><?= htmlspecialchars($valShortOpenTag) ?></td>
+                <td><?= htmlspecialchars($pqShortOpenTag) ?></td>
+            </tr>
+            <tr>
+                <td><code>expose_php</code></td>
+                <td><?= htmlspecialchars($valExposePhp ?: '0 (Off)') ?></td>
+                <td><?= htmlspecialchars($pqExposePhp) ?></td>
+            </tr>
+            <tr>
+                <td><code>memory_limit</code></td>
+                <td><?= htmlspecialchars($valMemoryLimit) ?></td>
+                <td><?= htmlspecialchars($pqMemoryLimit) ?></td>
+            </tr>
         </tbody>
     </table>
 
@@ -125,7 +159,7 @@ $shortOpenTagDespues = ini_get('short_open_tag');
         </tbody>
     </table>
 
-    <footer><a href="index.php">← Volver a la ficha</a></footer>
+    <footer><a href="ficha.php">← Volver a la ficha</a></footer>
 </main>
 </body>
 </html>
