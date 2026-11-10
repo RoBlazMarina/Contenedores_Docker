@@ -32,6 +32,8 @@ Este kit trae **solo el proyecto**. El servidor ya lo tienes montado: es tu
 
     docker compose exec www php -r "echo password_hash('TuClave', PASSWORD_DEFAULT), PHP_EOL;"
 
+| lynette   | Flecha2020   | Ranger    |
+
 y en phpMyAdmin inserta una fila en `aventureros` pegando ese hash en
 `password_hash`. Nunca guardes la contraseña en claro.
 
