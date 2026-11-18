@@ -24,6 +24,10 @@ $usuario  = '';     // TODO: recupéralo de la cookie COOKIE_USUARIO si existe
 $recordar = false;  // TODO: marcado si había usuario recordado
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $usuario = trim
+
+
     // TODO (Parte 3):
     //  1. Lee usuario (con trim), clave y la casilla "recordar".
     //  2. Si falta alguno → $error = 'Escribe tu usuario y tu contraseña.'

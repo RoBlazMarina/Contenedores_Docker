@@ -28,7 +28,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //  3. Si ya está en $_SESSION['zurron'] → mensaje de aviso, sin duplicar.
     //  4. Si no → añade el id a $_SESSION['zurron'] y mensaje de confirmación.
     //  5. Redirige (header Location + exit) para no reenviar el formulario con F5.
+
+$id =trim($_POST['id']??'');
+$mision = buscarMision($misiones, $id);
+
+if ($mision === null) {
+    mensajeFlash('Esa misión no existe en el tablón.');
+
+} elseif (in_array($id, $_SESSION['zurron'], true)) {
+        mensajeFlash('Ya tienes la misión «' . $mision['titulo'] . '» en tu zurrón.');
+
+} else {
+        $_SESSION['zurron'][] = $id;
+        mensajeFlash('Has aceptado la misión «' . $mision['titulo'] . '». ¡Suerte!');
+    }
+
+    header('Location: tablon.php');
+    exit;
 }
+
+
+
 
 // ---- GET: filtros ---------------------------------------------------------
 $rango     = leerRangoFiltro($_GET);
@@ -60,24 +80,35 @@ require __DIR__ . '/inc/cabecera.php';
 
 <p><?= count($visibles) ?> de <?= count($misiones) ?> misiones.</p>
 
+
+
 <div class="misiones">
+<?php if (count($visibles) === 0): ?>
+    <p>Ninguna misión cumple el filtro.</p>
+<?php endif; ?>
+
 <?php
-/*
- * TODO (Parte 1): recorre $visibles con foreach y pinta por cada misión:
- *
- *   <article class="mision CLASE">            CLASE = claseRango(rango)
- *     <span class="rango">B · Experto</span>   rango · etiquetaRango(rango)
- *     <h2>Título</h2>
- *     <p class="nota">Zona · 3 días</p>        "1 día" en singular
- *     <p>Descripción</p>
- *     <p class="oro">650 mo</p>                formatearOro()
- *     ... botón "Aceptar misión" (Parte 2) o "✔ En tu zurrón" si ya está aceptada
- *   </article>
- *
- * Escapa con e() todo texto que venga de los datos.
- * El botón es un formulario POST con un <input type="hidden" name="id">.
- * Si no queda ninguna misión, muestra "Ninguna misión cumple el filtro."
- */
-?>
+foreach($visibles as $m): ?>
+
+    <article class="mision <?=(claseRango($m['rango']))?>">
+    <span class= "rango"><?= e($m['rango']) ?> · <?= e(etiquetaRango($m['rango']))?></span>
+
+    <h2><?= e($m['titulo'])?></h2>
+
+    <p class="nota"><?= e($m['zona']) ?> · <?= $m['dias'] ?> <?= $m['dias'] === 1 ? 'día' : 'días' ?></p>
+    <p><?= e($m['descripcion'])?></p>
+    <p class="oro"><?= formatearOro($m['recompensa'])?></p>
+
+    <?php if (in_array($m['id'], $_SESSION['zurron'], true)): ?>
+        <p>✔ En tu zurrón</p>
+    <?php else: ?>
+        <form method="post" action ="tablon.php">
+            <input type="hidden" name="id" value="<?= e($m['id']) ?>">
+            <button type="submit"> Aceptar misión </button>
+    </form>
+    <?php endif; ?>
+</article>
+<?php endforeach; ?>
+
 </div>
 <?php require __DIR__ . '/inc/pie.php'; ?>

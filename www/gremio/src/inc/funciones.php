@@ -29,7 +29,18 @@ function e(string $texto): string
  */
 function etiquetaRango(string $rango): string
 {
-    return '¿?'; // TODO
+    return match ($rango){
+        'E'=> 'Novato',
+        'D'=> 'Aprendiz',
+        'C'=> 'Veterano',
+        'B'=> 'Experto',
+        'A'=> 'Élite',
+        'S'=> 'Leyenda',
+
+
+    };
+    /* No uso default porque con la eqtiqueta de Rango solo pueden llegarle valores válidos.
+    Es mejor que de haber un error, salte como error en este campo a que se oculte tras una etiqueta.*/
 }
 
 /**
@@ -39,7 +50,11 @@ function etiquetaRango(string $rango): string
  */
 function claseRango(string $rango): string
 {
-    return ''; // TODO
+    return match ($rango){
+        'E', 'D' => 'facil',
+        'C', 'B' => 'media',
+        'A', 'S' => 'dificil',
+    };
 }
 
 /**
@@ -48,7 +63,7 @@ function claseRango(string $rango): string
  */
 function formatearOro(int $oro): string
 {
-    return $oro . ' mo'; // TODO
+    return number_format($oro, 0, ',', '.') . ' mo'; // TODO
 }
 
 /**
@@ -57,8 +72,19 @@ function formatearOro(int $oro): string
  *       todavía: queremos ver el bucle.
  */
 function filtrarMisiones(array $misiones, ?string $rango, int $oroMinimo): array
-{
-    return $misiones; // TODO
+{   
+    $resultado = [];
+
+    foreach ($misiones as $mision) {
+        $cumpleRango = ($rango === null || $mision['rango'] === $rango);
+        $cumpleOro   = ($mision['recompensa'] >= $oroMinimo);
+
+        if ($cumpleRango && $cumpleOro) {
+            $resultado[] = $mision;
+        }
+    }
+
+    return $resultado;
 }
 
 /**
@@ -66,7 +92,15 @@ function filtrarMisiones(array $misiones, ?string $rango, int $oroMinimo): array
  */
 function buscarMision(array $misiones, string $id): ?array
 {
-    return null; // TODO
+    foreach ($misiones as $mision) {
+        if ($mision['id'] === $id) {
+            return $mision;
+        }
+    }
+
+
+
+    return null;
 }
 
 /**
@@ -75,7 +109,16 @@ function buscarMision(array $misiones, string $id): ?array
  */
 function totalRecompensa(array $misiones, array $ids): int
 {
-    return 0; // TODO
+
+    $total = 0;
+    foreach ($ids as $id) {
+        $mision = buscarMision($misiones, $id);
+        if ($mision !== null) {
+            $total += $mision['recompensa'];
+        }
+    }
+
+    return $total;
 }
 
 /**
@@ -85,7 +128,9 @@ function totalRecompensa(array $misiones, array $ids): int
  */
 function leerRangoFiltro(array $get): ?string
 {
-    return null; // TODO
+
+    $rango = strtoupper(trim((string) ($get['rango'] ?? '')));
+    return in_array($rango, RANGOS, true) ? $rango : null;
 }
 
 /**
@@ -95,5 +140,8 @@ function leerRangoFiltro(array $get): ?string
  */
 function leerOroMinimo(array $get): int
 {
-    return 0; // TODO
+    $oro = filter_var($get['oro'] ?? null, FILTER_VALIDATE_INT, [
+        'options' => ['min_range' => 0, 'max_range' => 10000],
+    ]);
+    return $oro === false ? 0 : $oro;
 }
