@@ -17,6 +17,11 @@ services:
             context: ./php
             dockerfile: Dockerfile
         container_name: php
+        environment:
+            MYSQL_HOST: db
+            MYSQL_DATABASE: mi_base_datos
+            MYSQL_USER: mi_usuario
+            MYSQL_PASSWORD: mi_password
         volumes:
             - ./www:/var/www/html
             - ./www/forja-heroes/php/forja.ini:/usr/local/etc/php/conf.d/zz-forja.ini:ro

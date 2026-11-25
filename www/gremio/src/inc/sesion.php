@@ -47,7 +47,14 @@ function aventureroActual(): ?array
  */
 function requiereLogin(): array
 {
-    return ['id' => 0, 'usuario' => 'invitado', 'nombre' => 'Invitado', 'clase' => '—']; // TODO
+    $aventurero = aventureroActual();
+
+    if ($aventurero === null) {
+        header('Location: login.php?motivo=privado');
+        exit;
+    }
+
+    return $aventurero;
 }
 
 /** Guarda un mensaje para mostrarlo UNA vez en la siguiente página. (Dado) */
@@ -70,8 +77,11 @@ function leerFlash(): ?string
  */
 function temaActual(): string
 {
-    return 'claro'; // TODO
+    $tema = $_COOKIE[COOKIE_TEMA] ?? '';
+
+    return (is_string($tema) && in_array($tema, TEMAS, true)) ? $tema : 'claro';
 }
+
 
 /**
  * Guarda el tema en la cookie COOKIE_TEMA durante un año.
@@ -79,19 +89,34 @@ function temaActual(): string
  */
 function guardarTema(string $tema): void
 {
-    // TODO
+    setcookie(COOKIE_TEMA, $tema, [
+        'expires'  => time() + 365 * 24 * 60 * 60,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
 }
 
 /** Guarda el NOMBRE DE USUARIO (nunca la contraseña) 30 días en COOKIE_USUARIO. */
 function recordarUsuario(string $usuario): void
 {
-    // TODO
+    setcookie(COOKIE_USUARIO, $usuario, [
+        'expires'  => time() + 30 * 24 * 60 * 60,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
 }
 
 /** Borra la cookie COOKIE_USUARIO (pista: caducidad en el pasado). */
 function olvidarUsuario(): void
 {
-    // TODO
+    setcookie(COOKIE_USUARIO, '', [
+        'expires'  => time() - 3600,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
 }
 
 /**
@@ -108,7 +133,24 @@ function olvidarUsuario(): void
  */
 function autenticar(PDO $pdo, string $usuario, string $clave): ?array
 {
-    return null; // TODO
+    $stmt = $pdo->prepare(
+        'SELECT id, usuario, nombre, clase, password_hash
+           FROM aventureros
+          WHERE usuario = :usuario'
+    );
+    $stmt->execute([':usuario' => $usuario]);
+    $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($fila === false) {
+        return null;
+    }
+
+    if (!password_verify($clave, $fila['password_hash'])) {
+        return null;
+    }
+
+    unset($fila['password_hash']);
+    return $fila;
 }
 
 /**
@@ -117,5 +159,17 @@ function autenticar(PDO $pdo, string $usuario, string $clave): ?array
  */
 function cerrarSesion(): void
 {
-    // TODO
+    $_SESSION = [];
+
+    $p = session_get_cookie_params();
+    setcookie(session_name(), '', [
+        'expires'  => time() - 3600,
+        'path'     => $p['path'],
+        'domain'   => $p['domain'],
+        'secure'   => $p['secure'],
+        'httponly' => $p['httponly'],
+        'samesite' => $p['samesite'],
+    ]);
+
+    session_destroy();
 }

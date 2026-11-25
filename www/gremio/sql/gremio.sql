@@ -12,6 +12,7 @@
 --    brunhilda / Martillo2026
 --    aldric    / Arcano2026
 --    vex       / Sombra2026
+--    lynette   / Flecha2020
 -- =====================================================================
 
 DROP TABLE IF EXISTS aventureros;
@@ -27,8 +28,8 @@ CREATE TABLE aventureros (
     UNIQUE KEY uk_aventureros_usuario (usuario)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO aventureros (usuario, nombre, clase, password_hash) VALUES <!--NO pongo lo siguiente para mantener las contraseñas-->
+INSERT INTO aventureros (usuario, nombre, clase, password_hash) VALUES --NO pongo lo siguiente para mantener las contraseñas--
 ('brunhilda', 'Brunhilda <Martillo de Hierro>', 'Guerrera',  '$2y$10$J/jtwgkymRdiLxtrxFkV9eXtvPNwOMjSWO5C5nvFXW.ZWwlvHxW66'),
 ('aldric',    'Aldric <el Arcano>',             'Hechicero', '$2y$10$T.bUxgnoGwW2WNlMo8c0he0B.WWOaZC0jCJgYSQCIbFE9paBF0tha'),
-('vex',       'Vex <Sin Nombre>',               'Pícara',    '$2y$10$yDhAkvCSRNZzxLAc5Mri9OhRiyX/gVrZB7ZJOXtd1/OMIHemnTEXK');
-<!--('lynette',   'Lynette <Halcñon Rojo>',         'Ranger',     '$2y$10$0TzUMwBRjRmUl8PHHDaR9Oi2qMIaImdfsretyOqX59OvdBWD6/UCO')-->
+('vex',       'Vex <Sin Nombre>',               'Pícara',    '$2y$10$yDhAkvCSRNZzxLAc5Mri9OhRiyX/gVrZB7ZJOXtd1/OMIHemnTEXK'),
+('lynette',   'Lynette <Halcón Rojo>',         'Ranger',     '$2y$10$0TzUMwBRjRmUl8PHHDaR9Oi2qMIaImdfsretyOqX59OvdBWD6/UCO');
